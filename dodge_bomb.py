@@ -1,7 +1,10 @@
 import os
 import sys
 import pygame as pg
-
+def check_bound(rect):
+    inx = 0 <= rect.left and rect.right <= WIDTH
+    iny = 0 <= rect.top  and rect.bottom <= HEIGHT
+    return inx, iny
 
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -43,9 +46,18 @@ def main():
             if key_lst[key]:
                 sum_mv[0] += dx
                 sum_mv[1] += dy
+        prev_kk = kk_rct.copy()
         kk_rct.move_ip(sum_mv)
+        inx, iny = check_bound(kk_rct)
+        if not (inx and iny):
+            kk_rct = prev_kk
         screen.blit(kk_img, kk_rct)
         bb_rct.move_ip(vx, vy)
+        inx, iny = check_bound(bb_rct)
+        if not inx:
+            vx *= -1
+        if not iny:
+            vy *= -1
         screen.blit(bb_img, bb_rct)
         pg.display.update()
         tmr += 1
