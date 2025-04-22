@@ -24,18 +24,19 @@ def gameover(screen: pg.Surface) -> None:
     ゲームオーバー時に半透明の黒い画面上に「Game Over」と表
     示し，泣いているこうかとん画像を貼り付ける関数
     """
-    overlay = pg.Surface(screen.get_size())
+    overlay = pg.Surface(screen.get_size())  # 半透明の黒い画面
     overlay.set_alpha(180)
     overlay.fill((0, 0, 0))
     screen.blit(overlay, (0, 0))
 
-    kk_cry = pg.transform.rotozoom(pg.image.load("fig/8.png"),0, 0.9)
+    kk_cry = pg.transform.rotozoom(pg.image.load("fig/8.png"),0, 0.9)  # 泣いているこうかとん画像
     img_w, img_h = kk_cry.get_size()
 
     font = pg.font.Font(None, 100)
     txt = font.render("Game Over", True, (255,255,255))
     txt_w, txt_h = txt.get_size()
 
+    # レイアウト
     spacing = 20
     total_w = img_w + spacing + txt_w + spacing + img_w
     x = (WIDTH - total_w) // 2
@@ -156,7 +157,7 @@ def main():
         prev_kk = kk_rct.copy()
         kk_rct.move_ip(sum_mv)
 
-        inx, iny = check_bound(kk_rct)
+        inx, iny = check_bound(kk_rct)  # barrier for bird
         if not (inx and iny):
             kk_rct = prev_kk
 
@@ -174,13 +175,13 @@ def main():
         avy = vy * acc
 
         bb_rct.move_ip(avx, avy)  # move bomb
-        inx, iny = check_bound(bb_rct)
+        inx, iny = check_bound(bb_rct)  # barrier for bomb
         if not inx:
             vx *= -1
         if not iny:
             vy *= -1
         
-        if kk_rct.colliderect(bb_rct):
+        if kk_rct.colliderect(bb_rct):  # when bomb collide with bird
             gameover(screen)
             return
 
