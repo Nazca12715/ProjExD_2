@@ -62,7 +62,7 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
 
 
 kk_base = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9) # 元画像
-_ORIENT_ANGLES: dict[tuple[int,int], int] = {
+_ORIENT_ANGLES: dict[tuple[int,int], int] = { # こうかとんのAoAを制御
     (-5,  0):   0,   # facing left
     (-5, -5):  315,  # facing left-up
     ( 0, -5):  270,  # facing up
@@ -147,7 +147,7 @@ def main():
                 return
         screen.blit(bg_img, [0, 0]) 
 
-        DELTA = {
+        DELTA = {  # keystrokes dictionary
             pg.K_UP:    ( 0, -5),
             pg.K_DOWN:  ( 0,  5),
             pg.K_LEFT:  (-5,  0),
@@ -170,14 +170,14 @@ def main():
         kk_img = get_kk_img(tuple(sum_mv))
         screen.blit(kk_img, kk_rct) # draw bird
 
-        vx, vy = calc_orientation(bb_rct, kk_rct, (vx, vy))
+        vx, vy = calc_orientation(bb_rct, kk_rct, (vx, vy)) # as said in def name
         idx = min(tmr // 500, 9)
         acc = bb_accs[idx]
         bb_img = bb_imgs[idx]
         center = bb_rct.center
         bb_rct = bb_img.get_rect(center=center)
 
-        vx, vy = calc_bb_velocity(bb_rct, kk_rct, (vx, vy))
+        vx, vy = calc_bb_velocity(bb_rct, kk_rct, (vx, vy)) # as said in def name
         avx = vx * acc
         avy = vy * acc
         bb_rct.move_ip(avx, avy) # move bomb
