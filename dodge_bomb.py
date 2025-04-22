@@ -48,9 +48,11 @@ def main():
                 sum_mv[1] += dy
         prev_kk = kk_rct.copy()
         kk_rct.move_ip(sum_mv)
+
         inx, iny = check_bound(kk_rct)
         if not (inx and iny):
             kk_rct = prev_kk
+
         screen.blit(kk_img, kk_rct)
         bb_rct.move_ip(vx, vy)
         inx, iny = check_bound(bb_rct)
@@ -58,6 +60,10 @@ def main():
             vx *= -1
         if not iny:
             vy *= -1
+        
+        if kk_rct.colliderect(bb_rct):
+            return
+
         screen.blit(bb_img, bb_rct)
         pg.display.update()
         tmr += 1
