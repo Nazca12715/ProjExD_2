@@ -10,6 +10,10 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 def check_bound(rect):
+    """
+    引数: こうかとんRectまたは爆弾Rect
+    戻り値: 判定結果タプル (画面内ならTrue, True)
+    """
     inx = 0 <= rect.left and rect.right <= WIDTH
     iny = 0 <= rect.top  and rect.bottom <= HEIGHT
     return inx, iny
@@ -55,10 +59,42 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
         bb_imgs.append(bb_img)
     return bb_imgs, bb_accs
 
+
+kk_base = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9) # 元画像
+_ORIENT_ANGLES: dict[tuple[int,int], int] = {
+    (-5,  0):   0,   # facing left
+    (-5, -5):  315,  # facing left-up
+    ( 0, -5):  270,  # facing up
+    ( 5, -5): 135,   # facing right-up
+    ( 5,  0): 180,   # facing right
+    ( 5,  5): 225,   # facing right-down
+    ( 0,  5): 90,    # facing down
+    (-5,  5): 45,    # facing left-down
+    ( 0,  0):   0,   # facing left
+}
+H_FLIP_ORIENTS = {   # 左右反転指定
+    ( 0, -5),
+    ( 0,  5),
+}
+Y_FLIP_ORIENTS = {   # 上下反転指定
+    ( 5, -5),
+    ( 5,  0),
+    ( 5,  5),
+}
+ORIENT_KK: dict[tuple[int,int], pg.Surface] = {} # dictionary of orientation surface
+for mv, angle in _ORIENT_ANGLES.items():
+    surf = pg.transform.rotozoom(kk_base, angle, 1.0)
+    if mv in H_FLIP_ORIENTS:
+        surf = pg.transform.flip(surf, True, False) # 左右反転
+    if mv in Y_FLIP_ORIENTS:
+        surf = pg.transform.flip(surf, False, True) # 上下反転
+    ORIENT_KK[mv] = surf
+
 def get_kk_img(sum_mv: tuple[int, int]) -> pg.Surface:
     """
     移動量の合計値タプルに対応する向きの画像Surfaceを返す
     """
+    return ORIENT_KK.get(sum_mv, ORIENT_KK[(0, 0)])
 
 def calc_orientation(org: pg.Rect, dst: pg.Rect,
 current_xy: tuple[float, float]) -> tuple[float, float]:
@@ -69,16 +105,19 @@ current_xy: tuple[float, float]) -> tuple[float, float]:
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    bg_img = pg.image.load("fig/pg_bg.jpg")    
+    bg_img = pg.image.load("fig/pg_bg.jpg")  
+    #　こうかどん初期化  
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
+    # 爆弾初期化
     bb_img = pg.Surface((20, 20))              
     bb_img.set_colorkey((0, 0, 0))             
     pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)  
     bb_rct = bb_img.get_rect()  
     bb_rct.center = random.randint(0, WIDTH), random.randint(0, HEIGHT)
     vx, vy = 5, 5     
+
     bb_imgs, bb_accs = init_bb_imgs()
 
     clock = pg.time.Clock()
@@ -100,8 +139,8 @@ def main():
 
         for key, (dx, dy) in DELTA.items():
             if key_lst[key]:
-                sum_mv[0] += dx
-                sum_mv[1] += dy
+                sum_mv[0] += dx  # x-axis move
+                sum_mv[1] += dy  # y-axis move
         prev_kk = kk_rct.copy()
         kk_rct.move_ip(sum_mv)
 
@@ -109,6 +148,7 @@ def main():
         if not (inx and iny):
             kk_rct = prev_kk
 
+        kk_img = get_kk_img(tuple(sum_mv))
         screen.blit(kk_img, kk_rct)
 
         idx = min(tmr // 500, 9)
@@ -117,7 +157,7 @@ def main():
         bb_img = bb_imgs[idx]
         center = bb_rct.center
         bb_rct = bb_img.get_rect(center=center)
-        bb_rct.move_ip(avx, avy)
+        bb_rct.move_ip(avx, avy) # move bomb
         inx, iny = check_bound(bb_rct)
         if not inx:
             vx *= -1
@@ -127,7 +167,7 @@ def main():
         if kk_rct.colliderect(bb_rct):
             gameover(screen)
 
-        screen.blit(bb_img, bb_rct)
+        screen.blit(bb_img, bb_rct) # draw bomb
         pg.display.update()
         tmr += 1
         clock.tick(50)
