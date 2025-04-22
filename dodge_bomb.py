@@ -41,6 +41,17 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
     サイズの異なる爆弾Surfaceを要素としたリストと加速度リストを返す
     """
 
+def get_kk_img(sum_mv: tuple[int, int]) -> pg.Surface:
+    """
+    移動量の合計値タプルに対応する向きの画像Surfaceを返す
+    """
+
+def calc_orientation(org: pg.Rect, dst: pg.Rect,
+current_xy: tuple[float, float]) -> tuple[float, float]:
+    """
+    orgから見て, dstがどこにあるかを計算し, 方向ベクトルをタプルで返す
+    """
+
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
