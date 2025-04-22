@@ -1,6 +1,8 @@
 import os
 import sys
 import pygame as pg
+import time
+
 def check_bound(rect):
     inx = 0 <= rect.left and rect.right <= WIDTH
     iny = 0 <= rect.top  and rect.bottom <= HEIGHT
@@ -11,6 +13,28 @@ def gameover(screen: pg.Surface) -> None:
     ゲームオーバー時に半透明の黒い画面上に「Game Over」と表
     示し，泣いているこうかとん画像を貼り付ける関数
     """
+    overlay = pg.Surface(screen.get_size())
+    overlay.set_alpha(180)
+    overlay.fill((0, 0, 0))
+    screen.blit(overlay, (0, 0))
+
+    kk_cry = pg.transform.rotozoom(pg.image.load("fig/8.png"),0, 0.9)
+    img_w, img_h = kk_cry.get_size()
+
+    font = pg.font.Font(None, 100)
+    txt = font.render("Game Over", True, (255,255,255))
+    txt_w, txt_h = txt.get_size()
+
+    spacing = 20
+    total_w = img_w + spacing + txt_w + spacing + img_w
+    x = (WIDTH - total_w) // 2
+    y = HEIGHT // 2
+
+    screen.blit(kk_cry, (x, (y - img_h //2)))
+    screen.blit(txt, (x + img_w + spacing, y - txt_h //2))
+    screen.blit(kk_cry, (x + img_w + spacing + txt_w + spacing, (y - img_h //2)))
+    pg.display.update
+    time.sleep(5)
 
 def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
     """
@@ -73,7 +97,7 @@ def main():
             vy *= -1
         
         if kk_rct.colliderect(bb_rct):
-            return
+            gameover(screen)
 
         screen.blit(bb_img, bb_rct)
         pg.display.update()
