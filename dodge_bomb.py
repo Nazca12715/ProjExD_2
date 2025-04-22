@@ -62,7 +62,7 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
 
 
 kk_base = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9) # 元画像
-_ORIENT_ANGLES: dict[tuple[int,int], int] = { # こうかとんのAoAを制御
+_ORIENT_ANGLES: dict[tuple[int,int], int] = { # こうかとん回転角度を制御
     (-5,  0):   0,   # facing left
     (-5, -5):  315,  # facing left-up
     ( 0, -5):  270,  # facing up
