@@ -101,25 +101,18 @@ def calc_orientation(org: pg.Rect, dst: pg.Rect, current_xy: tuple[float, float]
     """
     orgから見て, dstがどこにあるかを計算し, 方向ベクトルをタプルで返す
     """
-    vx_old, vy_old = current_xy
-    ox, oy = org.center
-    dx, dy = dst.center
-    sx = 1 if dx > ox else -1 if dx < ox else 0 # get x-direction
-    sy = 1 if dy > oy else -1 if dy < oy else 0 # get y-direction
-
-    return sx * abs(vx_old), sy * abs(vy_old) # insert directions
-
-def calc_bb_velocity(bb_rct: pg.Rect, kk_rct: pg.Rect, prev_v: tuple[float, float]) -> tuple[float, float]:
-    dx = kk_rct.centerx - bb_rct.centerx
-    dy = kk_rct.centery - bb_rct.centery
-    dist = math.hypot(dx, dy) # calculate distance between bomb and bird
+    vx_old, vy_old = current_xy 
+    dx = dst.centerx - org.centerx
+    dy = dst.centery - org.centery
+    dist = math.hypot(dx, dy)
     if dist < 300 or dist == 0:
-        return prev_v # 距離が300未満だったら慣性として前の方向に移動させる
-    
+        return vx_old, vy_old # 距離が300未満だったら慣性として前の方向に移動させる
+
     spd = math.sqrt(50)
     vx = dx / dist * spd
     vy = dy / dist * spd
     return vx, vy
+
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -170,16 +163,16 @@ def main():
         kk_img = get_kk_img(tuple(sum_mv))
         screen.blit(kk_img, kk_rct) # draw bird
 
-        vx, vy = calc_orientation(bb_rct, kk_rct, (vx, vy)) # as said in def name
         idx = min(tmr // 500, 9)
         acc = bb_accs[idx]
         bb_img = bb_imgs[idx]
         center = bb_rct.center
         bb_rct = bb_img.get_rect(center=center)
 
-        vx, vy = calc_bb_velocity(bb_rct, kk_rct, (vx, vy)) # as said in def name
+        vx, vy = calc_orientation(bb_rct, kk_rct, (vx, vy)) # calc new speed with inertia
         avx = vx * acc
         avy = vy * acc
+        
         bb_rct.move_ip(avx, avy) # move bomb
         inx, iny = check_bound(bb_rct)
         if not inx:
