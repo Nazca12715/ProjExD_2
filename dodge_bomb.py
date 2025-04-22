@@ -6,6 +6,17 @@ def check_bound(rect):
     iny = 0 <= rect.top  and rect.bottom <= HEIGHT
     return inx, iny
 
+def gameover(screen: pg.Surface) -> None:
+    """
+    ゲームオーバー時に半透明の黒い画面上に「Game Over」と表
+    示し，泣いているこうかとん画像を貼り付ける関数
+    """
+
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    """
+    サイズの異なる爆弾Surfaceを要素としたリストと加速度リストを返す
+    """
+
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
