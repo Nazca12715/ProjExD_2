@@ -118,7 +118,7 @@ def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("fig/pg_bg.jpg")  
-    #　こうかどん初期化  
+    #　こうかとん初期化  
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
@@ -172,7 +172,7 @@ def main():
         vx, vy = calc_orientation(bb_rct, kk_rct, (vx, vy)) # calc new speed with inertia
         avx = vx * acc
         avy = vy * acc
-        
+
         bb_rct.move_ip(avx, avy) # move bomb
         inx, iny = check_bound(bb_rct)
         if not inx:
