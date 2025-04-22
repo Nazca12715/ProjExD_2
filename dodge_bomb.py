@@ -61,16 +61,16 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
     return bb_imgs, bb_accs
 
 
-kk_base = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9) # 元画像
-_ORIENT_ANGLES: dict[tuple[int,int], int] = { # こうかとん回転角度を制御
+kk_base = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)  # 元画像
+_ORIENT_ANGLES: dict[tuple[int,int], int] = {  # こうかとん回転角度を制御
     (-5,  0):   0,   # facing left
-    (-5, -5):  315,  # facing left-up
-    ( 0, -5):  270,  # facing up
+    (-5, -5): 315,   # facing left-up
+    ( 0, -5): 270,   # facing up
     ( 5, -5): 135,   # facing right-up
     ( 5,  0): 180,   # facing right
     ( 5,  5): 225,   # facing right-down
-    ( 0,  5): 90,    # facing down
-    (-5,  5): 45,    # facing left-down
+    ( 0,  5):  90,   # facing down
+    (-5,  5):  45,   # facing left-down
     ( 0,  0):   0,   # facing left
 }
 H_FLIP_ORIENTS = {   # 左右反転指定
@@ -82,13 +82,13 @@ Y_FLIP_ORIENTS = {   # 上下反転指定
     ( 5,  0),
     ( 5,  5),
 }
-ORIENT_KK: dict[tuple[int,int], pg.Surface] = {} # dictionary of orientation surface
+ORIENT_KK: dict[tuple[int,int], pg.Surface] = {}  # dictionary of orientation surface
 for mv, angle in _ORIENT_ANGLES.items():
     surf = pg.transform.rotozoom(kk_base, angle, 1.0)
     if mv in H_FLIP_ORIENTS:
-        surf = pg.transform.flip(surf, True, False) # 左右反転
+        surf = pg.transform.flip(surf, True, False)  # 左右反転
     if mv in Y_FLIP_ORIENTS:
-        surf = pg.transform.flip(surf, False, True) # 上下反転
+        surf = pg.transform.flip(surf, False, True)  # 上下反転
     ORIENT_KK[mv] = surf
 
 def get_kk_img(sum_mv: tuple[int, int]) -> pg.Surface:
@@ -106,7 +106,7 @@ def calc_orientation(org: pg.Rect, dst: pg.Rect, current_xy: tuple[float, float]
     dy = dst.centery - org.centery
     dist = math.hypot(dx, dy)
     if dist < 300 or dist == 0:
-        return vx_old, vy_old # 距離が300未満だったら慣性として前の方向に移動させる
+        return vx_old, vy_old  # 距離が300未満だったら慣性として前の方向に移動させる
 
     spd = math.sqrt(50)
     vx = dx / dist * spd
@@ -161,7 +161,7 @@ def main():
             kk_rct = prev_kk
 
         kk_img = get_kk_img(tuple(sum_mv))
-        screen.blit(kk_img, kk_rct) # draw bird
+        screen.blit(kk_img, kk_rct)  # draw bird
 
         idx = min(tmr // 500, 9)
         acc = bb_accs[idx]
@@ -169,11 +169,11 @@ def main():
         center = bb_rct.center
         bb_rct = bb_img.get_rect(center=center)
 
-        vx, vy = calc_orientation(bb_rct, kk_rct, (vx, vy)) # calc new speed with inertia
+        vx, vy = calc_orientation(bb_rct, kk_rct, (vx, vy))  # calc new speed with inertia
         avx = vx * acc
         avy = vy * acc
 
-        bb_rct.move_ip(avx, avy) # move bomb
+        bb_rct.move_ip(avx, avy)  # move bomb
         inx, iny = check_bound(bb_rct)
         if not inx:
             vx *= -1
@@ -184,7 +184,7 @@ def main():
             gameover(screen)
             return
 
-        screen.blit(bb_img, bb_rct) # draw bomb
+        screen.blit(bb_img, bb_rct)  # draw bomb
         pg.display.update()
         tmr += 1
         clock.tick(50)
